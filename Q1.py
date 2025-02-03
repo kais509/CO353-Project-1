@@ -1,6 +1,7 @@
 from collections import defaultdict
 
 def dijkstra():
+    #write disktra and then we can check if the output works as the final answer
     return 0
 
 
@@ -9,7 +10,7 @@ def solve_spanning_trees(n, edges, root):
     for u, v, w in edges:
         graph[u].append((v, w))
         graph[v].append((u, w))
-    
+    #maybe change how the graph weight is stored/calculated for output
 
     min_closeness = 0   
     max_closeness = 0
