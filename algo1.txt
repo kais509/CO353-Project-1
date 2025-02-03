@@ -1,0 +1,5 @@
+Q1
+
+Start with root
+Cut all edges with a root vertex, mark the other vertice
+Non connected edges, find shortest path from any of its vertices to marked vertice (thats the spd)
