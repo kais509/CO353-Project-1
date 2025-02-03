@@ -1,10 +1,12 @@
 from collections import defaultdict
 
+#o(M LOG N)
 def dijkstra():
     #write disktra and then we can check if the output works as the final answer
     return 0
 
 
+#O(2m)
 def solve_spanning_trees(n, edges, root):
     graph = defaultdict(list)
     for u, v, w in edges:
@@ -23,7 +25,7 @@ def main():
     edges = []
     for _ in range(m):
         u, v, w = map(int, input().split())
-        edges.append((u, v, w))
+        edges.append([u, v, w])
     
     # Solve and print output
     min_close, max_close = solve_spanning_trees(n, edges, r)
