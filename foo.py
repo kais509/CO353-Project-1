@@ -24,28 +24,42 @@ class UnionFind:
 def find_min_cost_k_edge_subtree(n, k, edges):
     cost_1_edges = []
     cost_2_edges = []
+    cost_1_counts = [0] * n
     for u, v, c in edges:
         if c == 1:
+            cost_1_counts[u] += 1
+            cost_1_counts[v] += 1
             cost_1_edges.append((u, v))
         else:
             cost_2_edges.append((u, v))
 
-    min_cost = try_build_tree(cost_1_edges,cost_2_edges,k,n)
+    start_vertex = max(range(n), key=lambda x: cost_1_counts[x])
+
+    min_cost = try_build_tree(cost_1_edges,cost_2_edges,k,n,start_vertex)
 
     return min_cost
 
-def try_build_tree(cost_1_edges,cost_2_edges,k,n):
+def try_build_tree(cost_1_edges, cost_2_edges, k, n, start_vertex):
     uf = UnionFind(n)
-    vertices = set()
+    vertices = {start_vertex}
     edges_used = 0
     cost = 0
+
+    for u, v in cost_1_edges:
+        if edges_used >= k:
+            break
+        if (u == start_vertex and uf.union(u, v)) or (v == start_vertex and uf.union(u, v)):
+            edges_used += 1
+            cost += 1
+            vertices.add(u)
+            vertices.add(v)
 
     while edges_used < k:
         added_cost_1 = False
         for u, v in cost_1_edges:
             if edges_used >= k:
                 break
-            if edges_used == 0 or u in vertices or v in vertices:
+            if u in vertices or v in vertices:
                 if uf.union(u, v):
                     edges_used += 1
                     cost += 1
@@ -58,7 +72,7 @@ def try_build_tree(cost_1_edges,cost_2_edges,k,n):
             for u, v in cost_2_edges:
                 if edges_used >= k:
                     break
-                if edges_used == 0 or u in vertices or v in vertices:
+                if u in vertices or v in vertices:
                     if uf.union(u, v):
                         edges_used += 1
                         cost += 2
