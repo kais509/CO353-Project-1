@@ -34,61 +34,72 @@ def find_min_cost_k_edge_subtree(n, k, edges):
             cost_2_edges.append((u, v))
 
     start_vertex = max(range(n), key=lambda x: cost_1_counts[x])
-
-    min_cost = try_build_tree(cost_1_edges,cost_2_edges,k,n,start_vertex)
+    
+    min_cost = try_build_tree(cost_1_edges, cost_2_edges, k, n, start_vertex, cost_1_counts)
 
     return min_cost
 
-def try_build_tree(cost_1_edges, cost_2_edges, k, n, start_vertex):
+def try_build_tree(cost_1_edges, cost_2_edges, k, n, start_vertex, cost_1_counts):
     uf = UnionFind(n)
     vertices = {start_vertex}
     edges_used = 0
     cost = 0
 
-    for u, v in cost_1_edges:
-        if edges_used >= k:
-            break
-        if (u == start_vertex and uf.union(u, v)) or (v == start_vertex and uf.union(u, v)):
-            edges_used += 1
-            cost += 1
-            vertices.add(u)
-            vertices.add(v)
-
-    while edges_used < k:
+    added_cost_1 = True
+    while added_cost_1 and edges_used < k:
         added_cost_1 = False
         for u, v in cost_1_edges:
             if edges_used >= k:
                 break
-            if u in vertices or v in vertices:
+            if (u in vertices or v in vertices) and uf.union(u, v):
+                edges_used += 1
+                cost += 1
+                vertices.add(u)
+                vertices.add(v)
+                added_cost_1 = True
+
+    while edges_used < k:
+        best_vertex = max(
+            [i for i in range(n) if i not in vertices],
+            key=lambda x: cost_1_counts[x],
+            default=None
+        )
+        
+        if best_vertex is None:
+            break
+        added_edge = False
+        for u, v in cost_2_edges:
+            if edges_used >= k:
+                break
+            if ((u in vertices and v == best_vertex) or 
+                (v in vertices and u == best_vertex)):
                 if uf.union(u, v):
                     edges_used += 1
-                    cost += 1
+                    cost += 2
                     vertices.add(u)
                     vertices.add(v)
+                    added_edge = True
                     added_cost_1 = True
-        
-        if not added_cost_1 and edges_used < k:
-            added_cost_2 = False
-            for u, v in cost_2_edges:
-                if edges_used >= k:
+                    while added_cost_1 and edges_used < k:
+                        added_cost_1 = False
+                        for u1, v1 in cost_1_edges:
+                            if edges_used >= k:
+                                break
+                            if (u1 in vertices or v1 in vertices) and uf.union(u1, v1):
+                                edges_used += 1
+                                cost += 1
+                                vertices.add(u1)
+                                vertices.add(v1)
+                                added_cost_1 = True
                     break
-                if u in vertices or v in vertices:
-                    if uf.union(u, v):
-                        edges_used += 1
-                        cost += 2
-                        vertices.add(u)
-                        vertices.add(v)
-                        added_cost_2 = True
-                        break 
-
-            if not added_cost_2:
-                break
+        
+        if not added_edge:
+            break
                     
     if edges_used == k:
         return cost
         
     return float('inf')
-
 def main():
     n, k = map(int, input().split())
     edges = []
