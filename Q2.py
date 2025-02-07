@@ -2,7 +2,7 @@ class UnionFind:
     def __init__(self, size):
         self.parent = list(range(size))
         self.rank = [0] * size
-        self.components = size  # Only needed feature beyond Q1's version
+        self.components = size 
         
     def find(self, x):
         if self.parent[x] != x:
